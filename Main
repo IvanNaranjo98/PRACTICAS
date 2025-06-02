@@ -1,0 +1,9 @@
+public class Main {
+    public static void main(String[] args) {
+        // Crear un objeto de prueba de ProductoOtaku
+        com.akihabara.market.model.ProductoOtaku producto = new com.akihabara.market.model.ProductoOtaku(1, "Figura de Naruto Uzumaki", "Figura", 45.99, 15);
+        
+        // Mostrar la información del producto usando toString
+        System.out.println(producto);
+    }
+}
