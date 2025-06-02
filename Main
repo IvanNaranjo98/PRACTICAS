@@ -1,9 +1,37 @@
+import com.akihabara.market.dao.DatabaseConnection;
+import com.akihabara.market.model.ProductoOtaku;
+import java.sql.SQLException; // Import necesario para SQLException
+
 public class Main {
     public static void main(String[] args) {
         // Crear un objeto de prueba de ProductoOtaku
-        com.akihabara.market.model.ProductoOtaku producto = new com.akihabara.market.model.ProductoOtaku(1, "Figura de Naruto Uzumaki", "Figura", 45.99, 15);
+        ProductoOtaku producto = new ProductoOtaku(
+            1, 
+            "Figura de Naruto Uzumaki", 
+            "Figura", 
+            45.99, 
+            15
+        );
         
         // Mostrar la información del producto usando toString
         System.out.println(producto);
+
+        // Crear una instancia de DatabaseConnection para probar la conexión
+        DatabaseConnection dbConnection = new DatabaseConnection();
+        
+        // Verificar si la conexión se estableció correctamente
+        try {
+            if (dbConnection.getConexion() != null && !dbConnection.getConexion().isClosed()) {
+                System.out.println("Verificación exitosa: La conexión a la base de datos está activa.");
+            } else {
+                System.out.println("Verificación fallida: No se pudo establecer la conexión a la base de datos.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al verificar el estado de la conexión: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // Cerrar la conexión
+            dbConnection.cerrarConexion();
+        }
     }
 }
