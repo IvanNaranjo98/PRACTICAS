@@ -1,0 +1,39 @@
+-- Crear la base de datos akihabara_db
+CREATE DATABASE IF NOT EXISTS akihabara_db;
+USE akihabara_db;
+
+-- Crear la tabla producto
+CREATE TABLE producto (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL,
+    categoria VARCHAR(100) NOT NULL,
+    precio DECIMAL(10, 2) NOT NULL,
+    stock INT NOT NULL
+);
+
+-- Crear el usuario userAkihabara
+CREATE USER IF NOT EXISTS 'userAkihabara'@'localhost' IDENTIFIED BY 'Akihabara2025';
+
+-- Otorgar permisos CRUD (SELECT, INSERT, UPDATE, DELETE) al usuario sobre la tabla producto
+GRANT SELECT, INSERT, UPDATE, DELETE ON akihabara_db.producto TO 'userAkihabara'@'localhost';
+
+-- Aplicar los permisos
+FLUSH PRIVILEGES;
+
+-- Insertar datos de prueba en la tabla producto
+INSERT INTO producto (nombre, categoria, precio, stock) VALUES
+('Figura de Naruto Uzumaki', 'Figura', 45.99, 15),
+('Manga One Piece Vol. 1', 'Manga', 12.50, 30),
+('Póster de Attack on Titan', 'Póster', 8.99, 50),
+('Llavero de Sailor Moon', 'Llavero', 5.75, 100),
+('Camiseta de Dragon Ball Z', 'Ropa', 24.99, 20),
+('Figura de Luffy Gear 5', 'Figura', 59.99, 10),
+('Manga Jujutsu Kaisen Vol. 3', 'Manga', 13.25, 25),
+('Póster de My Hero Academia', 'Póster', 7.50, 40),
+('Llavero de Totoro', 'Llavero', 6.25, 80),
+('Sudadera de Evangelion', 'Ropa', 39.99, 15),
+('Figura de Goku Super Saiyan', 'Figura', 49.99, 12),
+('Manga Demon Slayer Vol. 5', 'Manga', 11.99, 35),
+('Póster de Tokyo Revengers', 'Póster', 9.25, 45),
+('Llavero de Pikachu', 'Llavero', 4.99, 120),
+('Chaqueta de Haikyuu', 'Ropa', 44.50, 10);
