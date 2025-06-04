@@ -1,37 +1,100 @@
-import com.akihabara.market.dao.DatabaseConnection;
+import com.akihabara.market.dao.ProductoDAO;
 import com.akihabara.market.model.ProductoOtaku;
-import java.sql.SQLException; // Import necesario para SQLException
+import com.akihabara.market.view.InterfazConsola;
+import java.util.List;
 
+//Clase controlador que coordina la interacción entre la vista y el DAO
 public class Main {
     public static void main(String[] args) {
-        // Crear un objeto de prueba de ProductoOtaku
-        ProductoOtaku producto = new ProductoOtaku(
-            1, 
-            "Figura de Naruto Uzumaki", 
-            "Figura", 
-            45.99, 
-            15
-        );
-        
-        // Mostrar la información del producto usando toString
-        System.out.println(producto);
+        // Instanciar la vista y el DAO
+        InterfazConsola vista = new InterfazConsola();
+        ProductoDAO productoDAO = new ProductoDAO();
 
-        // Crear una instancia de DatabaseConnection para probar la conexión
-        DatabaseConnection dbConnection = new DatabaseConnection();
-        
-        // Verificar si la conexión se estableció correctamente
-        try {
-            if (dbConnection.getConexion() != null && !dbConnection.getConexion().isClosed()) {
-                System.out.println("Verificación exitosa: La conexión a la base de datos está activa.");
-            } else {
-                System.out.println("Verificación fallida: No se pudo establecer la conexión a la base de datos.");
+        // Bucle principal
+        boolean salir = false;
+        while (!salir) {
+            // Mostrar el menú y obtener la opción
+            vista.mostrarMenu();
+            int opcion = vista.leerOpcionMenu();
+
+            switch (opcion) {
+                case 1: // Añadir producto
+                    ProductoOtaku nuevoProducto = vista.pedirDatosProducto();
+                    productoDAO.agregarProducto(nuevoProducto);
+                    vista.mostrarMensaje("Producto añadido correctamente.");
+                    break;
+
+                case 2: // Consultar producto por ID
+                    int idConsulta = vista.pedirIdProducto();
+                    if (idConsulta != -1) {
+                        ProductoOtaku producto = productoDAO.obtenerProductoPorId(idConsulta);
+                        vista.mostrarProducto(producto);
+                    }
+                    break;
+
+                case 3: // Listar todos los productos
+                    List<ProductoOtaku> todosLosProductos = productoDAO.obtenerTodosLosProductos();
+                    vista.mostrarListaProductos(todosLosProductos);
+                    break;
+
+                case 4: // Listar productos por nombre
+                    String nombreBusqueda = vista.pedirNombreProducto();
+                    if (nombreBusqueda != null) {
+                        List<ProductoOtaku> productosPorNombre = productoDAO.buscarProductosPorNombre(nombreBusqueda);
+                        vista.mostrarListaProductos(productosPorNombre);
+                    }
+                    break;
+
+                case 5: // Listar productos por categoría
+                    String categoria = vista.pedirCategoria();
+                    if (categoria != null) {
+                        List<ProductoOtaku> productosPorCategoria = productoDAO.buscarProductoPorCategoria(categoria);
+                        vista.mostrarListaProductos(productosPorCategoria);
+                    }
+                    break;
+
+                case 6: // Actualizar producto
+                    int idActualizar = vista.pedirIdProducto();
+                    if (idActualizar != -1) {
+                        ProductoOtaku productoExistente = productoDAO.obtenerProductoPorId(idActualizar);
+                        if (productoExistente != null) {
+                            ProductoOtaku productoActualizado = vista.pedirDatosProducto();
+                            productoActualizado.setId(idActualizar);
+                            boolean exito = productoDAO.actualizarProducto(productoActualizado);
+                            if (exito) {
+                                vista.mostrarMensaje("Producto actualizado correctamente.");
+                            } else {
+                                vista.mostrarError("No se pudo actualizar el producto.");
+                            }
+                        } else {
+                            vista.mostrarError("Producto no encontrado con ID: " + idActualizar);
+                        }
+                    }
+                    break;
+
+                case 7: // Eliminar producto
+                    int idEliminar = vista.pedirIdProducto();
+                    if (idEliminar != -1) {
+                        boolean exito = productoDAO.eliminarProducto(idEliminar);
+                        if (exito) {
+                            vista.mostrarMensaje("Producto eliminado correctamente.");
+                        } else {
+                            vista.mostrarError("No se pudo eliminar el producto o no existe.");
+                        }
+                    }
+                    break;
+
+                case 8: // Salir
+                    salir = true;
+                    vista.mostrarMensaje("Saliendo del programa...");
+                    productoDAO.getDbConnection().cerrarConexion();
+                    vista.cerrarScanner();
+                    break;
+
+                default:
+                    vista.mostrarError("Opción no válida. Por favor, seleccione una opción entre 1 y 8.");
+                    break;
             }
-        } catch (SQLException e) {
-            System.out.println("Error al verificar el estado de la conexión: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            // Cerrar la conexión
-            dbConnection.cerrarConexion();
         }
     }
 }
