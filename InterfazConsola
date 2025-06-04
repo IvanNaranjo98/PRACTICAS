@@ -1,0 +1,189 @@
+package com.akihabara.market.view;
+
+import com.akihabara.market.model.ProductoOtaku;
+import java.util.List;
+import java.util.Scanner;
+
+//Clase que maneja la interacción con el usuario a través de la consola
+public class InterfazConsola {
+    private final Scanner scanner;
+
+    //Constructor que inicializa el Scanner para entrada de usuario
+    public InterfazConsola() {
+        this.scanner = new Scanner(System.in);
+    }
+
+    //Muestra el menú principal en consola
+    public void mostrarMenu() {
+        System.out.println("\nMenú Akihabara Market");
+        System.out.println("1. Añadir producto");
+        System.out.println("2. Consultar producto por ID");
+        System.out.println("3. Listar todos los productos");
+        System.out.println("4. Listar productos por nombre");
+        System.out.println("5. Listar productos por categoría");
+        System.out.println("6. Actualizar producto");
+        System.out.println("7. Eliminar producto");
+        System.out.println("8. Salir");
+        System.out.print("Seleccione una opción (1-8): ");
+    }
+
+    //Lee y valida la opción del menú ingresada por el usuario. @return Un entero entre 1 y 8, o -1 si la entrada es inválida
+    public int leerOpcionMenu() {
+        try {
+            String input = scanner.nextLine().trim();
+            int opcion = Integer.parseInt(input);
+            if (opcion >= 1 && opcion <= 8) {
+                return opcion;
+            } else {
+                System.out.println("Error: La opción debe estar entre 1 y 8.");
+                return -1;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Por favor, ingrese un número válido.");
+            return -1;
+        }
+    }
+
+    //Pide los datos de un producto al usuario. @return Un objeto ProductoOtaku con los datos ingresados
+    public ProductoOtaku pedirDatosProducto() {
+        System.out.println("\n=== Ingresar datos del producto ===");
+        
+        System.out.print("Nombre: ");
+        String nombre = scanner.nextLine().trim();
+        while (nombre.isEmpty()) {
+            System.out.println("Error: El nombre no puede estar vacío.");
+            System.out.print("Nombre: ");
+            nombre = scanner.nextLine().trim();
+        }
+
+        System.out.print("Categoría (Figura, Manga, Póster, Llavero, Ropa): ");
+        String categoria = scanner.nextLine().trim();
+        while (!esCategoriaValida(categoria)) {
+            System.out.println("Error: Categoría no válida. Use: Figura, Manga, Póster, Llavero, Ropa.");
+            System.out.print("Categoría: ");
+            categoria = scanner.nextLine().trim();
+        }
+
+        double precio = 0;
+        boolean precioValido = false;
+        while (!precioValido) {
+            System.out.print("Precio: ");
+            try {
+                precio = Double.parseDouble(scanner.nextLine().trim());
+                if (precio > 0) {
+                    precioValido = true;
+                } else {
+                    System.out.println("Error: El precio debe ser mayor que 0.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Ingrese un precio válido (ej. 29.99).");
+            }
+        }
+
+        int stock = 0;
+        boolean stockValido = false;
+        while (!stockValido) {
+            System.out.print("Stock: ");
+            try {
+                stock = Integer.parseInt(scanner.nextLine().trim());
+                if (stock >= 0) {
+                    stockValido = true;
+                } else {
+                    System.out.println("Error: El stock no puede ser negativo.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Ingrese un número entero válido para el stock.");
+            }
+        }
+
+        return new ProductoOtaku(0, nombre, categoria, precio, stock);
+    }
+
+    //Pide un ID de producto al usuario. @return El ID ingresado, o -1 si es inválido
+    public int pedirIdProducto() {
+        System.out.print("Ingrese el ID del producto: ");
+        try {
+            int id = Integer.parseInt(scanner.nextLine().trim());
+            if (id > 0) {
+                return id;
+            } else {
+                System.out.println("Error: El ID debe ser mayor que 0.");
+                return -1;
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Error: Ingrese un ID numérico válido.");
+            return -1;
+        }
+    }
+
+    //Pide un nombre o parte del nombre para buscar productos. @return El nombre ingresado, o null si está vacío
+    public String pedirNombreProducto() {
+        System.out.print("Ingrese el nombre o parte del nombre del producto: ");
+        String nombre = scanner.nextLine().trim();
+        if (nombre.isEmpty()) {
+            System.out.println("Error: El nombre no puede estar vacío.");
+            return null;
+        }
+        return nombre;
+    }
+
+    //Pide una categoría para buscar productos. @return La categoría ingresada, o null si es inválida
+    public String pedirCategoria() {
+        System.out.print("Ingrese la categoría (Figura, Manga, Póster, Llavero, Ropa): ");
+        String categoria = scanner.nextLine().trim();
+        if (esCategoriaValida(categoria)) {
+            return categoria;
+        } else {
+            System.out.println("Error: Categoría no válida. Use: Figura, Manga, Póster, Llavero, Ropa.");
+            return null;
+        }
+    }
+
+    //Muestra un producto formateado. @param producto El producto a mostrar
+    public void mostrarProducto(ProductoOtaku producto) {
+        if (producto != null) {
+            System.out.println("Producto encontrado: " + producto);
+        } else {
+            System.out.println("No se encontró el producto.");
+        }
+    }
+
+    //Muestra una lista de productos formateada. @param productos La lista de productos a mostrar
+    public void mostrarListaProductos(List<ProductoOtaku> productos) {
+        if (productos.isEmpty()) {
+            System.out.println("No se encontraron productos.");
+        } else {
+            System.out.println("\n=== Lista de Productos ===");
+            for (ProductoOtaku p : productos) {
+                System.out.println(p);
+            }
+            System.out.println("Total: " + productos.size() + " producto(s).");
+        }
+    }
+
+    //Muestra un mensaje de confirmación. @param mensaje El mensaje a mostrar
+    public void mostrarMensaje(String mensaje) {
+        System.out.println(mensaje);
+    }
+
+    //Muestra un mensaje de error. @param mensaje El mensaje de error a mostrar
+    public void mostrarError(String mensaje) {
+        System.out.println("Error: " + mensaje);
+    }
+
+    //Valida si una categoría es válida. @param categoria La categoría a validar. @return true si es válida, false en caso contrario
+    private boolean esCategoriaValida(String categoria) {
+        String[] categoriasValidas = {"Figura", "Manga", "Póster", "Llavero", "Ropa"};
+        for (String valida : categoriasValidas) {
+            if (valida.equalsIgnoreCase(categoria)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    //Cierra el Scanner
+    public void cerrarScanner() {
+        scanner.close();
+    }
+}
