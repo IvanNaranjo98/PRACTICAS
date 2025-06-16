@@ -1,58 +1,43 @@
 package com.akihabara.market.dao;
+import java.sql.*;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
-//Clase para gestionar la conexión a la base de datos MySQL akihabara_db.
 public class DatabaseConnection {
-    // Variables constantes para los datos de conexión
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/akihabara_db?useSSL=false&serverTimezone=UTC";
-    private static final String USER = "userAkihabara";
-    private static final String PASSWORD = "Akihabara2025";
+    private Connection connection;
+    private final String DB_URL = "jdbc:mysql://localhost:3306/akihabara_db";
+    private final String USER = "userAkihabara";
+    private final String PASSWORD = "Akihabara2025";
 
-    // Propiedad privada para almacenar la conexión
-    private Connection conexion;
-
-    //Constructor que carga el driver de MySQL y establece la conexión a la base de datos.
     public DatabaseConnection() {
         try {
             // Cargar el driver de MySQL
             Class.forName("com.mysql.cj.jdbc.Driver");
             System.out.println("Se ha cargado en memoria el driver de MySQL.");
 
-            // Establecer la conexión a la base de datos
-            conexion = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+            // Establecer la conexión
+            connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
             System.out.println("Se ha establecido con éxito la conexión a la base de datos.");
 
         } catch (ClassNotFoundException e) {
-            // Manejo de error si no se encuentra el driver
-            System.out.println("Error: No se pudo cargar el driver de MySQL. Causa: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("Error al cargar el driver de MySQL: " + e.getMessage());
         } catch (SQLException e) {
-            // Manejo de error si falla la conexión
-            System.out.println("Error: No se pudo establecer la conexión a la base de datos. Causa: " + e.getMessage());
-            e.printStackTrace();
+            System.err.println("Error al establecer la conexión con la base de datos: " + e.getMessage());
         }
     }
 
-    //Obtiene la instancia de la conexión. @return La conexión activa a la base de datos.
-    public Connection getConexion() {
-        return conexion;
-    }
-
-    //Cierra la conexión a la base de datos si está activa.
-    public void cerrarConexion() {
-        if (conexion != null) {
-            try {
-                conexion.close();
+    // Método para cerrar la conexión
+    public void closeConnection() {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
                 System.out.println("Se ha cerrado la conexión con la base de datos.");
-            } catch (SQLException e) {
-                System.out.println("Error al cerrar la conexión: " + e.getMessage());
-                e.printStackTrace();
             }
-        } else {
-            System.out.println("No hay ninguna conexión activa para cerrar.");
+        } catch (SQLException e) {
+            System.err.println("Error al cerrar la conexión con la base de datos: " + e.getMessage());
         }
+    }
+
+    // Getter para la conexión
+    public Connection getConnection() {
+        return connection;
     }
 }
