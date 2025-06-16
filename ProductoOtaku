@@ -1,74 +1,79 @@
+//Esta clase es como una plantilla para los productos de la tienda Akihabara Market. Cada producto tiene un ID, nombre, categoría, precio y stock. Es parte del "Modelo" en MVC
 package com.akihabara.market.model;
 
 public class ProductoOtaku {
-    private int id;
-    private String nombre;
-    private String categoria;
-    private double precio;
-    private int stock;
+    // Variables para guardar los datos del producto
+    private int id; // El número único que identifica al producto
+    private String nombre; // El nombre del producto, como "Figura de Naruto"
+    private String categoria; // La categoría, como "Figura" o "Manga"
+    private double precio; // El precio del producto, en euros
+    private int stock; // Cuántas unidades hay en la tienda
 
-    // Constructor vacío
+    // Constructor vacío: lo usamos cuando creamos un producto sin datos aún
     public ProductoOtaku() {
+        // No hacemos nada aquí, solo creamos el objeto vacío
     }
 
-    // Constructor con todos los parámetros
+    // Constructor con todos los datos: lo usamos para crear un producto completo
     public ProductoOtaku(int id, String nombre, String categoria, double precio, int stock) {
-        this.id = id;
-        this.nombre = nombre;
-        this.categoria = categoria;
-        this.precio = precio;
-        this.stock = stock;
+        this.id = id; // Guardamos el ID
+        this.nombre = nombre; // Guardamos el nombre
+        this.categoria = categoria; // Guardamos la categoría
+        this.precio = precio; // Guardamos el precio
+        this.stock = stock; // Guardamos el stock
     }
 
-    // Getters y Setters
+    // Métodos "getters": sirven para obtener los valores de las variables
     public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+        return id; // Devolvemos el ID
     }
 
     public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+        return nombre; // Devolvemos el nombre
     }
 
     public String getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
+        return categoria; // Devolvemos la categoría
     }
 
     public double getPrecio() {
-        return precio;
-    }
-
-    public void setPrecio(double precio) {
-        this.precio = precio;
+        return precio; // Devolvemos el precio
     }
 
     public int getStock() {
-        return stock;
+        return stock; // Devolvemos el stock
+    }
+
+    // Métodos "setters": sirven para cambiar los valores de las variables
+    public void setId(int id) {
+        this.id = id; // Cambiamos el ID
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre; // Cambiamos el nombre
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria; // Cambiamos la categoría
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio; // Cambiamos el precio
     }
 
     public void setStock(int stock) {
-        this.stock = stock;
+        this.stock = stock; // Cambiamos el stock
     }
 
-    // Método toString
+    // Método toString: convierte el producto en un texto para mostrarlo
     @Override
     public String toString() {
+        // Devolvemos un texto con todos los datos del producto
         return "ProductoOtaku{" +
                "id=" + id +
                ", nombre='" + nombre + '\'' +
                ", categoria='" + categoria + '\'' +
-               ", precio=" + String.format("%.2f", precio) +
+               ", precio=" + String.format("%.2f", precio) + // Formato con 2 decimales
                ", stock=" + stock +
                '}';
     }
