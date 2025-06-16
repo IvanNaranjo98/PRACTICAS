@@ -1,9 +1,10 @@
--- Crear la base de datos akihabara_db
+-- Creación de la base de datos
+drop database if exists akihabara_db;
 CREATE DATABASE IF NOT EXISTS akihabara_db;
 USE akihabara_db;
 
--- Crear la tabla producto
-CREATE TABLE producto (
+-- Tabla producto
+CREATE TABLE IF NOT EXISTS producto (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
     categoria VARCHAR(100) NOT NULL,
@@ -11,16 +12,19 @@ CREATE TABLE producto (
     stock INT NOT NULL
 );
 
--- Crear el usuario userAkihabara
+-- Tabla cliente
+CREATE TABLE IF NOT EXISTS cliente (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL
+);
+
+-- Crear usuario y otorgar permisos
 CREATE USER IF NOT EXISTS 'userAkihabara'@'localhost' IDENTIFIED BY 'Akihabara2025';
-
--- Otorgar permisos CRUD (SELECT, INSERT, UPDATE, DELETE) al usuario sobre la tabla producto
-GRANT SELECT, INSERT, UPDATE, DELETE ON akihabara_db.producto TO 'userAkihabara'@'localhost';
-
--- Aplicar los permisos
+GRANT SELECT, INSERT, UPDATE, DELETE ON akihabara_db.* TO 'userAkihabara'@'localhost';
 FLUSH PRIVILEGES;
 
--- Insertar datos de prueba en la tabla producto
+-- Datos iniciales para producto
 INSERT INTO producto (nombre, categoria, precio, stock) VALUES
 ('Figura de Naruto Uzumaki', 'Figura', 45.99, 15),
 ('Manga One Piece Vol. 1', 'Manga', 12.50, 30),
@@ -37,3 +41,9 @@ INSERT INTO producto (nombre, categoria, precio, stock) VALUES
 ('Póster de Tokyo Revengers', 'Póster', 9.25, 45),
 ('Llavero de Pikachu', 'Llavero', 4.99, 120),
 ('Chaqueta de Haikyuu', 'Ropa', 44.50, 10);
+
+-- Datos iniciales para cliente
+INSERT INTO cliente (nombre, email) VALUES
+('Juan Pérez', 'juan.perez@example.com'),
+('María López', 'maria.lopez@example.com'),
+('Carlos Gómez', 'carlos.gomez@example.com');
