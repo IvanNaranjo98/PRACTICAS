@@ -1,67 +1,65 @@
-import com.akihabara.market.dao.ProductoDAO;
-import com.akihabara.market.model.ProductoOtaku;
-import com.akihabara.market.view.InterfazConsola;
-import java.util.List;
+//Esta clase es el "Controlador" en MVC. Es el programa principal que inicia la aplicación en consola. Lee el archivo config.properties, muestra el menú y ejecuta las opciones que elige el usuario.
 
-//Clase controlador que coordina la interacción entre la vista y el DAO
+import com.akihabara.market.dao.ProductoDAO; // Para manejar productos
+import com.akihabara.market.model.ProductoOtaku; // Modelo de producto
+import com.akihabara.market.service.IAService; // Para la simulación de IA
+import com.akihabara.market.view.InterfazConsola; // La vista en consola
+
 public class Main {
+    // Método principal: aquí empieza el programa
     public static void main(String[] args) {
-        // Instanciar la vista y el DAO
-        InterfazConsola vista = new InterfazConsola();
-        ProductoDAO productoDAO = new ProductoDAO();
+        // Creamos los objetos principales
+        InterfazConsola vista = new InterfazConsola(); // La vista en consola
+        ProductoDAO productoDAO = new ProductoDAO(); // DAO para productos
+        IAService iaService = new IAService(); // Servicio de IA simulada
 
-        // Bucle principal
+        // Bucle principal: muestra el menú hasta que el usuario salga
         boolean salir = false;
         while (!salir) {
-            // Mostrar el menú y obtener la opción
-            vista.mostrarMenu();
-            int opcion = vista.leerOpcionMenu();
+            vista.mostrarMenu(); // Mostramos el menú
+            int opcion = vista.leerOpcionMenu(); // Leemos la opción
 
             switch (opcion) {
                 case 1: // Añadir producto
-                    ProductoOtaku nuevoProducto = vista.pedirDatosProducto();
-                    productoDAO.agregarProducto(nuevoProducto);
+                    ProductoOtaku producto = vista.pedirDatosProducto(); // Pedimos datos
+                    productoDAO.agregarProducto(producto); // Añadimos el producto
                     vista.mostrarMensaje("Producto añadido correctamente.");
                     break;
 
                 case 2: // Consultar producto por ID
-                    int idConsulta = vista.pedirIdProducto();
-                    if (idConsulta != -1) {
-                        ProductoOtaku producto = productoDAO.obtenerProductoPorId(idConsulta);
-                        vista.mostrarProducto(producto);
+                    int idProducto = vista.pedirId("producto");
+                    if (idProducto != -1) {
+                        ProductoOtaku p = productoDAO.obtenerProductoPorId(idProducto);
+                        vista.mostrarProducto(p); // Mostramos el producto
                     }
                     break;
 
                 case 3: // Listar todos los productos
-                    List<ProductoOtaku> todosLosProductos = productoDAO.obtenerTodosLosProductos();
-                    vista.mostrarListaProductos(todosLosProductos);
+                    vista.mostrarListaProductos(productoDAO.obtenerTodosLosProductos());
                     break;
 
                 case 4: // Listar productos por nombre
-                    String nombreBusqueda = vista.pedirNombreProducto();
-                    if (nombreBusqueda != null) {
-                        List<ProductoOtaku> productosPorNombre = productoDAO.buscarProductosPorNombre(nombreBusqueda);
-                        vista.mostrarListaProductos(productosPorNombre);
+                    String nombre = vista.pedirNombreProducto();
+                    if (nombre != null) {
+                        vista.mostrarListaProductos(productoDAO.buscarProductosPorNombre(nombre));
                     }
                     break;
 
                 case 5: // Listar productos por categoría
                     String categoria = vista.pedirCategoria();
                     if (categoria != null) {
-                        List<ProductoOtaku> productosPorCategoria = productoDAO.buscarProductoPorCategoria(categoria);
-                        vista.mostrarListaProductos(productosPorCategoria);
+                        vista.mostrarListaProductos(productoDAO.buscarProductoPorCategoria(categoria));
                     }
                     break;
 
                 case 6: // Actualizar producto
-                    int idActualizar = vista.pedirIdProducto();
+                    int idActualizar = vista.pedirId("producto");
                     if (idActualizar != -1) {
-                        ProductoOtaku productoExistente = productoDAO.obtenerProductoPorId(idActualizar);
-                        if (productoExistente != null) {
-                            ProductoOtaku productoActualizado = vista.pedirDatosProducto();
-                            productoActualizado.setId(idActualizar);
-                            boolean exito = productoDAO.actualizarProducto(productoActualizado);
-                            if (exito) {
+                        ProductoOtaku existente = productoDAO.obtenerProductoPorId(idActualizar);
+                        if (existente != null) {
+                            ProductoOtaku actualizado = vista.pedirDatosProducto();
+                            actualizado.setId(idActualizar);
+                            if (productoDAO.actualizarProducto(actualizado)) {
                                 vista.mostrarMensaje("Producto actualizado correctamente.");
                             } else {
                                 vista.mostrarError("No se pudo actualizar el producto.");
@@ -73,27 +71,28 @@ public class Main {
                     break;
 
                 case 7: // Eliminar producto
-                    int idEliminar = vista.pedirIdProducto();
+                    int idEliminar = vista.pedirId("producto");
                     if (idEliminar != -1) {
-                        boolean exito = productoDAO.eliminarProducto(idEliminar);
-                        if (exito) {
+                        if (productoDAO.eliminarProducto(idEliminar)) {
                             vista.mostrarMensaje("Producto eliminado correctamente.");
                         } else {
                             vista.mostrarError("No se pudo eliminar el producto o no existe.");
                         }
                     }
                     break;
+                case 8:
+                	String resultado = vista.pedirDatosIA();
+                	System.out.println(resultado);
+                	break;
 
-                case 8: // Salir
+                case 9: // Salir
                     salir = true;
+                    vista.cerrarScanner(); // Cerramos el Scanner
                     vista.mostrarMensaje("Saliendo del programa...");
-                    productoDAO.getDbConnection().cerrarConexion();
-                    vista.cerrarScanner();
                     break;
 
                 default:
-                    vista.mostrarError("Opción no válida. Por favor, seleccione una opción entre 1 y 8.");
-                    break;
+                    vista.mostrarError("Opción no válida. Seleccione entre 1 y 12.");
             }
         }
     }
