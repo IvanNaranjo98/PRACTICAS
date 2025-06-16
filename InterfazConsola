@@ -1,19 +1,20 @@
+//Esta clase es la "Vista" en MVC. Muestra el menú en la consola y lee lo que el usuario escribe. También valida que los datos sean correctos, como nombres o precios.
 package com.akihabara.market.view;
 
-import com.akihabara.market.model.ProductoOtaku;
-import java.util.List;
-import java.util.Scanner;
+import com.akihabara.market.model.ProductoOtaku; // Para manejar productos
+import java.util.List; // Para mostrar listas
+import java.util.Scanner; // Para leer lo que escribe el usuario
+import com.akihabara.market.service.*;
 
-//Clase que maneja la interacción con el usuario a través de la consola
 public class InterfazConsola {
-    private final Scanner scanner;
+    private final Scanner scanner; // Objeto para leer de la consola
 
-    //Constructor que inicializa el Scanner para entrada de usuario
+    // Constructor: crea el Scanner
     public InterfazConsola() {
         this.scanner = new Scanner(System.in);
     }
 
-    //Muestra el menú principal en consola
+    // Método para mostrar el menú principal
     public void mostrarMenu() {
         System.out.println("\nMenú Akihabara Market");
         System.out.println("1. Añadir producto");
@@ -23,34 +24,34 @@ public class InterfazConsola {
         System.out.println("5. Listar productos por categoría");
         System.out.println("6. Actualizar producto");
         System.out.println("7. Eliminar producto");
-        System.out.println("8. Salir");
-        System.out.print("Seleccione una opción (1-8): ");
+        System.out.println("8. Sugerir nombre IA");
+        System.out.println("9. Salir");
+        System.out.print("Seleccione una opción (1-9): ");
     }
 
-    //Lee y valida la opción del menú ingresada por el usuario. @return Un entero entre 1 y 8, o -1 si la entrada es inválida
+    // Método para leer la opción del menú
     public int leerOpcionMenu() {
         try {
-            String input = scanner.nextLine().trim();
-            int opcion = Integer.parseInt(input);
-            if (opcion >= 1 && opcion <= 8) {
+            String input = scanner.nextLine().trim(); // Leemos y quitamos espacios
+            int opcion = Integer.parseInt(input); // Convertimos a número
+            if (opcion >= 1 && opcion <= 9) { // Validamos que esté entre 1 y 12
                 return opcion;
             } else {
-                System.out.println("Error: La opción debe estar entre 1 y 8.");
-                return -1;
+                System.out.println("Error: La opción debe estar entre 1 y 9.");
+                return -1; // Devolvemos -1 si es inválida
             }
         } catch (NumberFormatException e) {
-            System.out.println("Error: Por favor, ingrese un número válido.");
-            return -1;
+            System.out.println("Error: Ingrese un número válido.");
+            return -1; // Devolvemos -1 si no es un número
         }
     }
 
-    //Pide los datos de un producto al usuario. @return Un objeto ProductoOtaku con los datos ingresados
+    // Método para pedir los datos de un producto
     public ProductoOtaku pedirDatosProducto() {
         System.out.println("\n=== Ingresar datos del producto ===");
-        
         System.out.print("Nombre: ");
         String nombre = scanner.nextLine().trim();
-        while (nombre.isEmpty()) {
+        while (nombre.isEmpty()) { // Validamos que no esté vacío
             System.out.println("Error: El nombre no puede estar vacío.");
             System.out.print("Nombre: ");
             nombre = scanner.nextLine().trim();
@@ -58,7 +59,7 @@ public class InterfazConsola {
 
         System.out.print("Categoría (Figura, Manga, Póster, Llavero, Ropa): ");
         String categoria = scanner.nextLine().trim();
-        while (!esCategoriaValida(categoria)) {
+        while (!esCategoriaValida(categoria)) { // Validamos la categoría
             System.out.println("Error: Categoría no válida. Use: Figura, Manga, Póster, Llavero, Ropa.");
             System.out.print("Categoría: ");
             categoria = scanner.nextLine().trim();
@@ -69,7 +70,7 @@ public class InterfazConsola {
         while (!precioValido) {
             System.out.print("Precio: ");
             try {
-                precio = Double.parseDouble(scanner.nextLine().trim());
+                precio = Double.parseDouble(scanner.nextLine().trim()); // Convertimos a decimal
                 if (precio > 0) {
                     precioValido = true;
                 } else {
@@ -85,7 +86,7 @@ public class InterfazConsola {
         while (!stockValido) {
             System.out.print("Stock: ");
             try {
-                stock = Integer.parseInt(scanner.nextLine().trim());
+                stock = Integer.parseInt(scanner.nextLine().trim()); // Convertimos a entero
                 if (stock >= 0) {
                     stockValido = true;
                 } else {
@@ -96,12 +97,14 @@ public class InterfazConsola {
             }
         }
 
+        // Creamos y devolvemos el producto
         return new ProductoOtaku(0, nombre, categoria, precio, stock);
     }
 
-    //Pide un ID de producto al usuario. @return El ID ingresado, o -1 si es inválido
-    public int pedirIdProducto() {
-        System.out.print("Ingrese el ID del producto: ");
+
+    // Método para pedir un ID (de producto o cliente)
+    public int pedirId(String tipo) {
+        System.out.print("Ingrese el ID de " + tipo + ": ");
         try {
             int id = Integer.parseInt(scanner.nextLine().trim());
             if (id > 0) {
@@ -116,7 +119,7 @@ public class InterfazConsola {
         }
     }
 
-    //Pide un nombre o parte del nombre para buscar productos. @return El nombre ingresado, o null si está vacío
+    // Método para pedir un nombre de producto para buscar
     public String pedirNombreProducto() {
         System.out.print("Ingrese el nombre o parte del nombre del producto: ");
         String nombre = scanner.nextLine().trim();
@@ -127,7 +130,7 @@ public class InterfazConsola {
         return nombre;
     }
 
-    //Pide una categoría para buscar productos. @return La categoría ingresada, o null si es inválida
+    // Método para pedir una categoría
     public String pedirCategoria() {
         System.out.print("Ingrese la categoría (Figura, Manga, Póster, Llavero, Ropa): ");
         String categoria = scanner.nextLine().trim();
@@ -138,8 +141,21 @@ public class InterfazConsola {
             return null;
         }
     }
+    
+    public String pedirDatosIA() {
+    	System.out.print("Ingrese la categoría (Figura, Manga, Póster, Llavero, Ropa): ");
+        String categoria = scanner.nextLine().trim();
+        
+        System.out.print("Ingrese la franquicia: ");
+        String franquicia = scanner.nextLine().trim();
+        
+        IAService IA = new IAService();
+        String resultado = IA.sugerirNombreProducto(categoria, franquicia);
+        
+        return resultado;
+    }
 
-    //Muestra un producto formateado. @param producto El producto a mostrar
+    // Método para mostrar un producto
     public void mostrarProducto(ProductoOtaku producto) {
         if (producto != null) {
             System.out.println("Producto encontrado: " + producto);
@@ -148,7 +164,8 @@ public class InterfazConsola {
         }
     }
 
-    //Muestra una lista de productos formateada. @param productos La lista de productos a mostrar
+
+    // Método para mostrar una lista de productos
     public void mostrarListaProductos(List<ProductoOtaku> productos) {
         if (productos.isEmpty()) {
             System.out.println("No se encontraron productos.");
@@ -161,17 +178,17 @@ public class InterfazConsola {
         }
     }
 
-    //Muestra un mensaje de confirmación. @param mensaje El mensaje a mostrar
+    // Método para mostrar un mensaje
     public void mostrarMensaje(String mensaje) {
         System.out.println(mensaje);
     }
 
-    //Muestra un mensaje de error. @param mensaje El mensaje de error a mostrar
+    // Método para mostrar un error
     public void mostrarError(String mensaje) {
         System.out.println("Error: " + mensaje);
     }
 
-    //Valida si una categoría es válida. @param categoria La categoría a validar. @return true si es válida, false en caso contrario
+    // Método privado para validar categorías
     private boolean esCategoriaValida(String categoria) {
         String[] categoriasValidas = {"Figura", "Manga", "Póster", "Llavero", "Ropa"};
         for (String valida : categoriasValidas) {
@@ -182,7 +199,7 @@ public class InterfazConsola {
         return false;
     }
 
-    //Cierra el Scanner
+    // Método para cerrar el Scanner
     public void cerrarScanner() {
         scanner.close();
     }
